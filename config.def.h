@@ -139,7 +139,6 @@ static const char *colorname[] = {
 	"cyan",
 	"white",
 
-	[255] = 0,
 };
 
 
