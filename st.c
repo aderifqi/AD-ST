@@ -47,6 +47,9 @@
 #define ISCONTROL(c)		(ISCONTROLC0(c) || ISCONTROLC1(c))
 #define ISDELIM(u)		(u && wcschr(worddelimiters, u))
 #define INTERVAL(x, a, b)	(x) < (a) ? (a) : (x) > (b) ? (b) : (x)
+#define TLINE(y)		((y) < term.scr ? term.hist[((y) + term.histi - \
+				term.scr + HISTSIZE + 1) % HISTSIZE] : \
+				term.line[(y) - term.scr])
 
 enum term_mode {
 	MODE_WRAP        = 1 << 0,
@@ -1199,7 +1202,8 @@ tscrolldown(int orig, int n, int copyhist)
 		term.line[i-n] = temp;
 	}
 
-	selscroll(orig, n);
+	if (term.scr == 0)
+		selscroll(orig, n);
 }
 
 void
@@ -1229,7 +1233,8 @@ tscrollup(int orig, int n, int copyhist)
 		term.line[i+n] = temp;
 	}
 
-	selscroll(orig, -n);
+	if (term.scr == 0)
+		selscroll(orig, -n);
 }
 
 void
@@ -2755,7 +2760,8 @@ draw(void)
 		cx--;
 
 	drawregion(0, 0, term.col, term.row);
-	xdrawcursor(cx, term.c.y, TLINE(term.c.y)[cx],
+	if (term.scr == 0)
+		xdrawcursor(cx, term.c.y, TLINE(term.c.y)[cx],
 			term.ocx, term.ocy, TLINE(term.ocy)[term.ocx]);
 	term.ocx = cx;
 	term.ocy = term.c.y;
